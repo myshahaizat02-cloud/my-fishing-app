@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628"/>
+      <stop offset="100%" style="stop-color:#162d50"/>
+    </linearGradient>
+    <linearGradient id="fish" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff"/>
+      <stop offset="100%" style="stop-color:#0099cc"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <g transform="translate(96,96)">
+    <!-- Fish body -->
+    <ellipse cx="0" cy="0" rx="50" ry="28" fill="url(#fish)"/>
+    <!-- Fish tail -->
+    <polygon points="40,0 65,-22 65,22" fill="url(#fish)"/>
+    <!-- Fish eye -->
+    <circle cx="-25" cy="-5" r="8" fill="#0a1628"/>
+    <circle cx="-23" cy="-6" r="3" fill="#fff"/>
+    <!-- Fish fin -->
+    <polygon points="0,-28 15,-45 25,-28" fill="url(#fish)" opacity="0.8"/>
+  </g>
+  <!-- Waves -->
+  <path d="M20,145 Q48,135 76,145 T132,145 T188,145" stroke="rgba(0,212,255,0.3)" stroke-width="3" fill="none"/>
+  <path d="M4,155 Q32,145 60,155 T116,155 T172,155" stroke="rgba(0,212,255,0.2)" stroke-width="3" fill="none"/>
+</svg>

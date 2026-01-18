@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find the best fishing spots, track your catches, and compete with other anglers!">
+    <meta name="theme-color" content="#0a1628">
+    <title>FishFinder Pro - Your Ultimate Fishing Companion</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <span class="logo">🎣</span>
+            <h1>FishFinder Pro</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn-icon" id="solunarPinBtn" onclick="toggleSolunarMode()"
+                title="Tap map for location forecast">
+                <span>📍</span>
+            </button>
+            <button class="btn-icon" id="forecastBtn" title="Fish Activity Forecast">
+                <span>🐟</span>
+            </button>
+            <button class="btn-icon" id="leaderboardBtn" title="Leaderboard">
+                <span>🏆</span>
+            </button>
+            <button class="btn-icon" id="profileBtn" title="My Profile">
+                <span>👤</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 id="sidebarTitle">Fishing Spots</h2>
+                <button class="btn-close" id="closeSidebar">×</button>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </aside>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-view="map">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-label">Map</span>
+            </button>
+            <button class="nav-item" data-view="spots">
+                <span class="nav-icon">📍</span>
+                <span class="nav-label">Spots</span>
+            </button>
+            <button class="nav-item add-catch-btn" id="addCatchBtn">
+                <span class="nav-icon">➕</span>
+                <span class="nav-label">Log</span>
+            </button>
+            <button class="nav-item" data-view="community">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">Community</span>
+            </button>
+            <button class="nav-item" data-view="log">
+                <span class="nav-icon">📖</span>
+                <span class="nav-label">My Log</span>
+            </button>
+        </nav>
+    </main>
+
+    <!-- Add Spot Modal -->
+    <div class="modal" id="addSpotModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Fishing Spot</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <form id="addSpotForm" class="modal-body">
+                <div class="form-group">
+                    <label for="spotName">Spot Name</label>
+                    <input type="text" id="spotName" required placeholder="e.g., Lake Sunset">
+                </div>
+                <div class="form-group">
+                    <label for="spotType">Type</label>
+                    <select id="spotType" required>
+                        <option value="lake">🏞️ Lake</option>
+                        <option value="river">🌊 River</option>
+                        <option value="ocean">🌅 Ocean</option>
+                        <option value="pond">💧 Pond</option>
+                        <option value="stream">🏔️ Stream</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="spotDescription">Description</label>
+                    <textarea id="spotDescription" rows="3" placeholder="What makes this spot great?"></textarea>
+                </div>
+                <input type="hidden" id="spotLat">
+                <input type="hidden" id="spotLng">
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary modal-close">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Spot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Catch Modal -->
+    <div class="modal" id="logCatchModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Log Your Catch</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <form id="logCatchForm" class="modal-body">
+                <div class="form-group">
+                    <label for="catchPhoto">Photo</label>
+                    <div class="photo-upload" id="photoUpload">
+                        <input type="file" id="catchPhoto" accept="image/*" capture="environment">
+                        <div class="photo-preview" id="photoPreview">
+                            <span class="upload-icon">📷</span>
+                            <span>Tap to add photo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="catchSpecies">Species</label>
+                    <div class="species-input-wrapper">
+                        <input type="text" id="catchSpecies" required placeholder="e.g., Largemouth Bass">
+                        <button type="button" class="btn-identify" id="identifyFromPhoto"
+                            title="Identify from photo">🔍</button>
+                    </div>
+                    <div class="species-suggestion" id="speciesSuggestion"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="catchWeight">Weight (kg)</label>
+                        <input type="number" id="catchWeight" step="0.1" min="0" placeholder="0.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="catchLength">Length (cm)</label>
+                        <input type="number" id="catchLength" step="1" min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="catchSpot">Fishing Spot</label>
+                    <select id="catchSpot">
+                        <option value="">Select a spot...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="catchNotes">Notes</label>
+                    <textarea id="catchNotes" rows="2" placeholder="What bait did you use?"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary modal-close">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Log Catch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forecast Modal -->
+    <div class="modal" id="forecastModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>🐟 Fish Activity Forecast</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <div class="modal-body" id="forecastContent">
+                <!-- Forecast content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal" id="leaderboardModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>🏆 Leaderboard</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <div class="modal-body" id="leaderboardContent">
+                <!-- Leaderboard content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Fish Identifier Modal -->
+    <div class="modal" id="identifyModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔍 Fish Identifier</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="identifier-upload">
+                    <input type="file" id="identifyPhoto" accept="image/*" capture="environment">
+                    <div class="photo-preview" id="identifyPreview">
+                        <span class="upload-icon">📷</span>
+                        <span>Take or upload a photo</span>
+                    </div>
+                </div>
+                <div class="identifier-result" id="identifyResult">
+                    <!-- Results shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spot Details Modal -->
+    <div class="modal" id="spotDetailsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="spotDetailsTitle">Spot Details</h3>
+                <button class="btn-close modal-close">×</button>
+            </div>
+            <div class="modal-body" id="spotDetailsContent">
+                <!-- Spot details loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Popup -->
+    <div class="score-popup" id="scorePopup">
+        <div class="score-content">
+            <div class="score-icon">🎣</div>
+            <div class="score-points">+0</div>
+            <div class="score-breakdown"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
