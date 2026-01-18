@@ -1,6 +1,15 @@
 // ===== FishFinder Pro - Main Application =====
 // Focused on Kedah, Malaysia fishing spots
 
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW Registered!', reg.scope))
+            .catch(err => console.error('SW Failed:', err));
+    });
+}
+
 // ===== Malaysian Fish Database =====
 const FISH_DATABASE = {
     // Freshwater - Common

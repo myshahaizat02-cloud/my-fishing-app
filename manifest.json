@@ -2,7 +2,7 @@
     "name": "FishFinder Pro",
     "short_name": "FishFinder",
     "description": "Your ultimate fishing companion - find spots, track catches, compete with anglers!",
-    "start_url": "/",
+    "start_url": ".",
     "display": "standalone",
     "background_color": "#0a1628",
     "theme_color": "#0a1628",
@@ -31,7 +31,7 @@
             "name": "Log Catch",
             "short_name": "Log",
             "description": "Log a new fish catch",
-            "url": "/?action=log",
+            "url": "./?action=log",
             "icons": [
                 {
                     "src": "icons/icon-192.svg",
@@ -44,7 +44,7 @@
             "name": "Forecast",
             "short_name": "Forecast",
             "description": "Check fish activity forecast",
-            "url": "/?action=forecast",
+            "url": "./?action=forecast",
             "icons": [
                 {
                     "src": "icons/icon-192.svg",

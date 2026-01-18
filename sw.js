@@ -1,13 +1,13 @@
 // FishFinder Pro - Service Worker
 const CACHE_NAME = 'fishfinder-v1';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
-    '/icons/icon-192.svg',
-    '/icons/icon-512.svg',
+    './',
+    'index.html',
+    'styles.css',
+    'app.js',
+    'manifest.json',
+    'icons/icon-192.svg',
+    'icons/icon-512.svg',
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap'
@@ -85,7 +85,7 @@ self.addEventListener('fetch', (event) => {
                     .catch(() => {
                         // Offline fallback for HTML pages
                         if (event.request.headers.get('accept').includes('text/html')) {
-                            return caches.match('/index.html');
+                            return caches.match('index.html');
                         }
                     });
             })
@@ -110,11 +110,11 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body || 'Time to go fishing!',
-        icon: '/icons/icon-192.png',
-        badge: '/icons/icon-192.png',
+        icon: 'icons/icon-192.svg',
+        badge: 'icons/icon-192.svg',
         vibrate: [100, 50, 100],
         data: {
-            url: data.url || '/'
+            url: data.url || './'
         },
         actions: [
             { action: 'open', title: 'Open App' },
@@ -133,6 +133,6 @@ self.addEventListener('notificationclick', (event) => {
     if (event.action === 'dismiss') return;
 
     event.waitUntil(
-        clients.openWindow(event.notification.data.url || '/')
+        clients.openWindow(event.notification.data.url || './')
     );
 });
